@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الكتب العلمية النادرة - الدكتور</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media (max-width: 768px) {
+            .sci-books-hero .main-title {
+                font-size: 2.5rem !important;
+                line-height: 1.4;
+            }
+            .hero-desc {
+                width: 90%;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-heart-pulse"></i>
+            <div class="logo-text"><span>الدكتور</span><small>BIOLOGY MASTER</small></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="library.html">الكتب</a></li>
+            <li><a href="videos.html">الفيديوهات</a></li>
+            <li><a href="schedule.html">الجدول</a></li>
+            <li><a href="reviews.html">التقييمات</a></li>
+            <li><a href="contact.html">تواصل معنا</a></li>
+            <li><a href="scientific-books.html" class="active">الكتب النادرة</a></li>
+        </ul>
+        <a href="scientific-books.html" class="btn-nav-special">الكتب العلمية النادرة</a>
+        <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
+    </nav>
+
+    <section class="sci-books-hero">
+        <p class="subtitle">RARE SCIENTIFIC COLLECTION</p>
+        <h1 class="main-title" style="font-size: 3.5rem;">الكتب العلمية النادرة<br>في <span class="neon-green-text">علم الأحياء</span></h1>
+        <p class="hero-desc">مجموعة حصرية من أندر المراجع والكتب العالمية في علم الأحياء، متاحة الآن لطلاب الدكتور.</p>
+    </section>
+
+    <footer>
+        <p style="text-align: center;">جميع الحقوق محفوظة © 2026 | تم التطوير بواسطة فريق عبقرينو & كيمو <i class="fa-solid fa-heart"></i></p>
+    </footer>
+
+    <script>
+        const menuBtn = document.querySelector('.menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuBtn.innerHTML = navLinks.classList.contains('active') ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
+        });
+    </script>
+
+    <!-- نظام الإشعارات الذكي -->
+    <div id="fire-notification" class="fire-toast">
+        <i class="fa-solid fa-fire-flame-curved"></i>
+        <div>
+            <h4>تنبيه عاجل من الدكتور</h4>
+            <small>اضغط للذهاب لمركز الرسائل</small>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyD092yeOowtCLW0fDcIzaEXrnxvrN4X5T8", authDomain: "abqarieno.firebaseapp.com", databaseURL: "https://abqarieno-default-rtdb.firebaseio.com", projectId: "abqarieno", storageBucket: "abqarieno.firebasestorage.app", messagingSenderId: "790682500839", appId: "1:790682500839:web:cd50b8e01729f821e06c42" };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        const notif = document.getElementById('fire-notification');
+        const contactLink = document.querySelector('a[href="contact.html"]');
+        const loadTime = Date.now();
+
+        onChildAdded(query(ref(db, 'broadcasts'), limitToLast(1)), (snapshot) => {
+            const msg = snapshot.val();
+            if(msg.timestamp > loadTime) {
+                notif.classList.add('show');
+                setTimeout(() => notif.classList.remove('show'), 6000);
+                if(contactLink) contactLink.classList.add('has-new');
+            }
+        });
+        notif.onclick = () => window.location.href = 'contact.html';
+    </script>
+</body>
+</html>
