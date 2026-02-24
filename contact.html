@@ -85,7 +85,7 @@
         }
         .btn-delete:hover { background: #ff3366; color: #fff; box-shadow: 0 0 15px rgba(255, 51, 102, 0.4); }
 
-        .preview-img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid var(--master-neon); display: none; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .preview-img { max-width: 150px; max-height: 150px; width: auto; height: auto; object-fit: contain; border-radius: 8px; border: 1px solid var(--master-neon); display: none; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: rgba(0,0,0,0.3); margin: 0 10px; }
         @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
 
         /* --- الفوتر الجديد --- */
@@ -175,6 +175,11 @@
         <div style="font-size: 0.8rem; color: #444;">
             تطوير وإدارة فريق <span style="color: var(--master-neon);">عبقرينو وكريم</span> &copy; 2026
         </div>
+        <div style="margin-top: 15px;">
+            <button onclick="switchRole()" style="background: transparent; border: 1px solid #333; color: #666; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; transition: 0.3s;">
+                <i class="fa-solid fa-user-shield"></i> دخول المستر (تبديل)
+            </button>
+        </div>
     </footer>
 
     <script type="module">
@@ -222,6 +227,15 @@
         window.enterAs = function(role) {
             if(role === 'student') localStorage.setItem('biology_user_role', 'student'); // حفظ دائم للطالب
             document.getElementById('gate-overlay').style.display = 'none';
+        }
+
+        window.switchRole = function() {
+            const code = prompt("أدخل كود المستر للتبديل:");
+            if(code === "2027") {
+                localStorage.removeItem('biology_user_role'); // إزالة تسجيل الطالب
+                sessionStorage.setItem('biology_user_role', 'master'); // تفعيل المستر
+                location.reload();
+            } else if(code !== null) alert("الكود غير صحيح");
         }
 
         window.handleFileSelect = () => {
