@@ -58,7 +58,7 @@
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* تحسين للموبايل */
             gap: 2rem;
         }
 
@@ -144,61 +144,26 @@
             overflow: hidden;
         }
 
-        /* أزرار الصوت */
-        .audio-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn-listen {
-            flex: 1;
-            background: rgba(0, 179, 255, 0.1);
-            color: var(--ocean-blue);
-            border: 1px solid var(--ocean-blue);
+        /* زر تحميل الفيديو */
+        .btn-download-vid {
+            width: 100%;
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--cyber-green);
+            border: 1px solid var(--cyber-green);
             padding: 10px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
             transition: 0.3s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-decoration: none;
+            margin-top: 15px;
         }
 
-        .btn-listen:hover {
-            background: var(--ocean-blue);
+        .btn-download-vid:hover {
+            background: var(--cyber-green);
             color: #000;
         }
-
-        .btn-listen.playing {
-            background: var(--danger-red);
-            color: #fff;
-            border-color: var(--danger-red);
-        }
-
-        /* الأنيميشن الصوتي */
-        .audio-visualizer {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            align-items: center; justify-content: center; gap: 4px;
-            z-index: 5;
-        }
-
-        .audio-visualizer.active { display: flex; }
-
-        .bar {
-            width: 4px; height: 20px;
-            background: var(--cyber-green);
-            animation: bounce 1s infinite alternate;
-        }
-        @keyframes bounce { 
-            from { height: 10px; } 
-            to { height: 40px; } 
-        }
-
-        .hidden-audio-player { width: 0; height: 0; position: absolute; visibility: hidden; }
-
     </style>
 </head>
 <body>
@@ -264,21 +229,13 @@
                 <div class="vid-thumb" onclick="playVideo(this, '${vid.id}')">
                     <img src="https://img.youtube.com/vi/${vid.id}/maxresdefault.jpg" alt="${vid.title}" loading="lazy">
                     <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-                    <div class="audio-visualizer">
-                        <div class="bar" style="animation-delay:0.1s"></div>
-                        <div class="bar" style="animation-delay:0.3s"></div>
-                        <div class="bar" style="animation-delay:0.5s"></div>
-                        <div class="bar" style="animation-delay:0.2s"></div>
-                    </div>
                 </div>
                 <div class="vid-info">
                     <span class="vid-cat">${vid.cat}</span>
                     <h3>${vid.title}</h3>
-                    <div class="audio-actions">
-                        <button class="btn-listen" onclick="toggleAudio(this, '${vid.id}')">
-                            <i class="fa-solid fa-headphones"></i> استمع كريكورد
-                        </button>
-                    </div>
+                    <a href="https://www.youtube.com/watch?v=${vid.id}" target="_blank" class="btn-download-vid">
+                        <i class="fa-solid fa-download"></i> تحميل الفيديو
+                    </a>
                 </div>
             `;
             grid.appendChild(card);
@@ -303,42 +260,41 @@
             container.appendChild(iframe);
         }
 
-        // تشغيل الصوت فقط (بودكاست)
-        function toggleAudio(btn, id) {
-            const card = btn.closest('.video-card');
-            const visualizer = card.querySelector('.audio-visualizer');
-            const isPlaying = btn.classList.contains('playing');
-
-            // إيقاف أي مشغل صوتي آخر شغال
-            document.querySelectorAll('.btn-listen.playing').forEach(b => {
-                if(b !== btn) b.click(); 
-            });
-
-            if (!isPlaying) {
-                const audioPlayer = document.createElement('iframe');
-                audioPlayer.className = 'hidden-audio-player';
-                audioPlayer.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
-                card.appendChild(audioPlayer);
-                
-                btn.innerHTML = '<i class="fa-solid fa-stop"></i> إيقاف';
-                btn.classList.add('playing');
-                visualizer.classList.add('active');
-            } else {
-                const player = card.querySelector('.hidden-audio-player');
-                if(player) player.remove();
-                
-                btn.innerHTML = '<i class="fa-solid fa-headphones"></i> استمع كريكورد';
-                btn.classList.remove('playing');
-                visualizer.classList.remove('active');
-            }
-        }
-
         const menuBtn = document.querySelector('.menu-btn');
         const navLinks = document.querySelector('.nav-links');
         menuBtn.addEventListener('click', () => {
             navLinks.classList.toggle('active');
             menuBtn.innerHTML = navLinks.classList.contains('active') ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
         });
+    </script>
+
+    <!-- نظام الإشعارات الذكي -->
+    <div id="fire-notification" class="fire-toast">
+        <i class="fa-solid fa-fire-flame-curved"></i>
+        <div>
+            <h4>تنبيه عاجل من الدكتور</h4>
+            <small>اضغط للذهاب لمركز الرسائل</small>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyD092yeOowtCLW0fDcIzaEXrnxvrN4X5T8", authDomain: "abqarieno.firebaseapp.com", databaseURL: "https://abqarieno-default-rtdb.firebaseio.com", projectId: "abqarieno", storageBucket: "abqarieno.firebasestorage.app", messagingSenderId: "790682500839", appId: "1:790682500839:web:cd50b8e01729f821e06c42" };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        const notif = document.getElementById('fire-notification');
+        const loadTime = Date.now();
+
+        onChildAdded(query(ref(db, 'broadcasts'), limitToLast(1)), (snapshot) => {
+            const msg = snapshot.val();
+            if(msg.timestamp > loadTime) {
+                notif.classList.add('show');
+                setTimeout(() => notif.classList.remove('show'), 6000);
+            }
+        });
+        notif.onclick = () => window.location.href = 'contact.html';
     </script>
 </body>
 </html>
