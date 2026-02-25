@@ -436,6 +436,12 @@ footer {
 .fire-toast h4 { margin: 0; font-size: 0.95rem; color: #fff; font-weight: bold; }
 .fire-toast small { color: #aaa; font-size: 0.75rem; }
 @keyframes flame { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.2); opacity: 1; text-shadow: 0 0 20px #ff4500; } }
+.fire-toast img {
+    width: 45px; height: 45px; object-fit: cover;
+    border-radius: 8px; border: 1px solid #ff4500;
+    display: none; /* مخفي افتراضياً */
+}
+.fire-toast img.show { display: block; }
 
 /* النقطة الحمراء على رابط تواصل معنا */
 .nav-links a[href="contact.html"] { position: relative; }
@@ -445,3 +451,150 @@ footer {
     box-shadow: 0 0 10px #ff0000; animation: pulse-red 1.5s infinite;
 }
 @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(255, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); } }
+/* =========================================
+   تنسيقات دمج صورة الأستاذ في الهيرو
+========================================= */
+.hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 30px;
+    z-index: 2; /* لضمان ظهور المحتوى فوق الخلفية المظلمة */
+}
+
+.hero-text {
+    flex: 1.2;
+    text-align: right;
+}
+
+.hero-image {
+    flex: 0.8;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* لترتكز الصورة بالأسفل بشكل واقعي */
+}
+
+.doctor-img {
+    max-width: 100%;
+    height: auto;
+    max-height: 75vh;
+    /* ظل نيون أحمر يناسب ألوان ثيم الموقع ليدمج الصورة مع الخلفية */
+    filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.4)); 
+    animation: floatDoctor 4s ease-in-out infinite;
+    border: #000 solid 1px; /* إطار بسيط حول الصورة لتمييزها عن الخلفية */
+    border-radius: 35px;
+}
+
+/* حركة عائمة بسيطة للصورة تعطي طابع ديناميكي */
+@keyframes floatDoctor {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* --- تعديلات الموبايل (Responsive) --- */
+@media (max-width: 768px) {
+    .hero-content {
+        flex-direction: column-reverse; /* يجعل الصورة تظهر فوق الكلام في الموبايل */
+        text-align: center;
+        margin-top: 40px;
+    }
+    
+    .hero-text {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .doctor-img {
+        max-height: 45vh; /* تصغير الصورة في الشاشات الصغيرة لتجنب زحمة الشاشة */
+        margin-bottom: 20px;
+    }
+}
+
+/* --- نظام الأخبار العائم (News Float System) --- */
+.news-float-btn {
+    position: fixed;
+    top: 100px; /* أسفل الناف بار */
+    right: 20px;
+    background: rgba(10, 10, 15, 0.9);
+    border: 1px solid var(--neon-green);
+    color: white;
+    padding: 8px 15px; /* تصغير الحجم */
+    border-radius: 50px;
+    cursor: pointer;
+    z-index: 9999;
+    display: none; /* مخفي افتراضياً ويظهر فقط عند وجود أخبار */
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem; /* تصغير الخط */
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+    transition: 0.3s;
+    backdrop-filter: blur(5px);
+}
+.news-float-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(0, 255, 65, 0.4); }
+.news-float-btn i { color: var(--neon-green); font-size: 1.2rem; }
+.news-badge {
+    position: absolute; top: -5px; right: -5px;
+    width: 12px; height: 12px; background: #ff0000;
+    border-radius: 50%; box-shadow: 0 0 10px #ff0000;
+    animation: pulse-red 1s infinite; display: none;
+}
+.news-badge.active { display: block; }
+.news-float-btn.glowing {
+    animation: glow-pulse 1.5s infinite alternate;
+    border-color: #fff;
+}
+@keyframes glow-pulse {
+    from { box-shadow: 0 0 5px var(--neon-green); }
+    to { box-shadow: 0 0 25px var(--neon-green), 0 0 10px #fff; }
+}
+
+/* نافذة الأخبار المنبثقة */
+.news-modal-overlay {
+    position: fixed; 
+    top: 150px; /* أسفل الزر مباشرة */
+    right: 20px; 
+    width: auto; height: auto;
+    background: transparent; z-index: 10000;
+    display: block;
+    opacity: 0; visibility: hidden; transition: 0.3s; 
+}
+.news-modal-overlay.open { opacity: 1; visibility: visible; }
+
+.news-modal {
+    background: #0f0f13; width: 300px; /* عرض صغير ثابت */
+    border-radius: 20px; border: 1px solid var(--neon-green);
+    padding: 15px; position: relative; max-height: 60vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    transform: translateY(20px); transition: 0.3s;
+}
+.news-modal-overlay.open .news-modal { transform: translateY(0); }
+
+.news-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.news-header h3 { color: var(--neon-green); margin: 0; display: flex; align-items: center; gap: 10px; }
+.close-news { cursor: pointer; color: #888; font-size: 1.2rem; transition: 0.3s; }
+.close-news:hover { color: #fff; }
+
+.news-list { overflow-y: auto; flex: 1; padding-right: 5px; }
+.news-item {
+    background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px;
+    margin-bottom: 10px; border-right: 3px solid #333; transition: 0.3s;
+}
+.news-item.new { border-right-color: var(--neon-red); background: rgba(255, 0, 0, 0.05); }
+.news-date { font-size: 0.7rem; color: #666; display: block; margin-bottom: 5px; }
+.news-text { font-size: 0.95rem; line-height: 1.5; color: #ddd; }
+.news-link { display: inline-block; margin-top: 8px; font-size: 0.8rem; color: var(--neon-green); text-decoration: underline; }
+
+/* زر تم القراءة */
+.btn-mark-read {
+    background: transparent; border: 1px solid var(--neon-green);
+    color: var(--neon-green); padding: 8px; width: 100%;
+    border-radius: 8px; margin-top: 10px; cursor: pointer;
+    font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-mark-read:hover { background: var(--neon-green); color: #000; }

@@ -8,265 +8,201 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- ستايلات 2090 الأساسية --- */
+        /* --- ستايلات الهوية البصرية (Cyber-Biology) --- */
         :root {
             --cyber-green: #00ff88;
-            --cyber-glow: rgba(0, 255, 136, 0.5);
-            --card-bg: rgba(15, 15, 20, 0.6);
+            --cyber-glow: rgba(0, 255, 136, 0.4);
+            --card-bg: rgba(15, 15, 20, 0.7);
             --danger-red: #ff3366;
+            --ocean-blue: #00b3ff;
         }
 
         body {
             background-color: #050508; 
             color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
         }
 
         .page-header {
             text-align: center;
-            padding: 4rem 1rem 2rem;
-            position: relative;
+            padding: 6rem 1rem 3rem;
+            background: radial-gradient(circle at top, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
         }
 
         .subtitle {
             color: var(--cyber-green);
-            letter-spacing: 5px;
+            letter-spacing: 4px;
             font-weight: 900;
-            font-size: 1rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
             text-shadow: 0 0 10px var(--cyber-glow);
+            margin-bottom: 10px;
         }
 
         .main-title {
-            font-size: 3.5rem;
+            font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 900;
-            margin: 0.5rem 0;
-            background: linear-gradient(45deg, #fff, #888);
+            margin: 0;
+            background: linear-gradient(to bottom, #fff 30%, #666 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        .neon-green-text {
-            background: linear-gradient(45deg, var(--cyber-green), #00b3ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px var(--cyber-glow);
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
             padding: 2rem;
         }
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
         }
 
+        /* تصميم الكارت الاحترافي */
         .video-card {
             background: var(--card-bg);
-            border-radius: 24px;
+            border-radius: 20px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             position: relative;
         }
 
         .video-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-10px) scale(1.02);
             border-color: var(--cyber-green);
-            box-shadow: 0 15px 40px var(--cyber-glow);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--cyber-glow);
         }
 
         .vid-thumb {
             position: relative;
             padding-bottom: 56.25%; 
             background: #000;
-            overflow: hidden;
             cursor: pointer;
+            overflow: hidden;
         }
 
         .vid-thumb img {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover;
-            transition: transform 0.6s ease, opacity 0.3s;
-            opacity: 0.8;
+            transition: 0.5s;
+            filter: brightness(0.8);
         }
 
         .video-card:hover .vid-thumb img {
+            filter: brightness(0.4) blur(2px);
             transform: scale(1.1);
-            opacity: 0.4;
         }
 
         .play-btn {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 70px;
-            height: 70px;
-            background: rgba(0, 255, 136, 0.1);
-            border: 2px solid var(--cyber-green);
+            width: 65px; height: 65px;
+            background: var(--cyber-green);
+            color: #000;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 24px;
-            color: var(--cyber-green);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
             z-index: 2;
+            opacity: 0.9;
+            box-shadow: 0 0 20px var(--cyber-green);
+            transition: 0.3s;
         }
 
         .video-card:hover .play-btn {
-            background: var(--cyber-green);
-            color: #000;
-            box-shadow: 0 0 30px var(--cyber-green);
-            transform: translate(-50%, -50%) scale(1.15);
-        }
-
-        .vid-thumb iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            z-index: 3;
-            background: #000;
+            transform: translate(-50%, -50%) scale(1.2);
+            opacity: 1;
         }
 
         .vid-info {
             padding: 1.5rem;
-            position: relative;
-            z-index: 2;
         }
 
         .vid-cat {
-            display: inline-block;
-            padding: 0.4rem 1rem;
-            background: rgba(0, 255, 136, 0.1);
+            font-size: 0.7rem;
+            font-weight: bold;
             color: var(--cyber-green);
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid var(--cyber-green);
+            padding: 2px 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: inline-block;
         }
 
         .vid-info h3 {
-            margin: 0 0 1rem 0;
-            font-size: 1.2rem;
-            line-height: 1.6;
-            color: #fff;
+            margin: 10px 0;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            height: 3rem;
+            overflow: hidden;
         }
 
-        /* --- إضافات الريكورد/الصوت (الجديدة) --- */
-        
-        /* زر الاستماع */
+        /* أزرار الصوت */
         .audio-actions {
             display: flex;
             gap: 10px;
             margin-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding-top: 15px;
         }
 
         .btn-listen {
             flex: 1;
             background: rgba(0, 179, 255, 0.1);
-            color: #00b3ff;
-            border: 1px solid #00b3ff;
+            color: var(--ocean-blue);
+            border: 1px solid var(--ocean-blue);
             padding: 10px;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
-            font-family: inherit;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
 
         .btn-listen:hover {
-            background: #00b3ff;
+            background: var(--ocean-blue);
             color: #000;
-            box-shadow: 0 0 15px rgba(0, 179, 255, 0.5);
         }
 
         .btn-listen.playing {
-            background: rgba(255, 51, 102, 0.1);
-            color: var(--danger-red);
+            background: var(--danger-red);
+            color: #fff;
             border-color: var(--danger-red);
         }
 
-        .btn-listen.playing:hover {
-            background: var(--danger-red);
-            color: #fff;
-            box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
-        }
-
-        /* أنيميشن مشغل الصوت الوهمي */
+        /* الأنيميشن الصوتي */
         .audio-visualizer {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: #050508;
-            z-index: 4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center; justify-content: center; gap: 4px;
+            z-index: 5;
         }
 
-        .audio-visualizer.active {
-            opacity: 1;
-            pointer-events: all;
-        }
+        .audio-visualizer.active { display: flex; }
 
         .bar {
-            width: 8px;
-            height: 10px;
+            width: 4px; height: 20px;
             background: var(--cyber-green);
-            border-radius: 5px;
-            animation: pulse-audio 1s ease-in-out infinite;
-            box-shadow: 0 0 10px var(--cyber-green);
+            animation: bounce 1s infinite alternate;
+        }
+        @keyframes bounce { 
+            from { height: 10px; } 
+            to { height: 40px; } 
         }
 
-        .bar:nth-child(1) { animation-delay: 0.1s; height: 30px; }
-        .bar:nth-child(2) { animation-delay: 0.3s; height: 60px; }
-        .bar:nth-child(3) { animation-delay: 0.0s; height: 90px; }
-        .bar:nth-child(4) { animation-delay: 0.2s; height: 50px; }
-        .bar:nth-child(5) { animation-delay: 0.4s; height: 20px; }
-
-        @keyframes pulse-audio {
-            0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
-            50% { transform: scaleY(1.2); opacity: 1; }
-        }
-
-        .hidden-audio-player {
-            width: 0;
-            height: 0;
-            border: none;
-            position: absolute;
-        }
+        .hidden-audio-player { width: 0; height: 0; position: absolute; visibility: hidden; }
 
     </style>
 </head>
 <body>
+
     <nav class="navbar">
         <div class="logo">
             <i class="fa-solid fa-heart-pulse"></i>
@@ -277,233 +213,132 @@
             <li><a href="library.html">الكتب</a></li>
             <li><a href="videos.html" class="active">الفيديوهات</a></li>
             <li><a href="schedule.html">الجدول</a></li>
-            <li><a href="reviews.html">التقييمات</a></li>
+            <li><a href="reviews.html">ورق الشرح</a></li>
             <li><a href="contact.html">تواصل معنا</a></li>
-            <li class="nav-special-mobile"><a href="scientific-books.html">الكتب النادرة</a></li>
         </ul>
         <a href="scientific-books.html" class="btn-nav-special">الكتب العلمية النادرة</a>
         <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
     </nav>
 
-    <div class="page-header">
-        <p class="subtitle">Next-Gen Lectures</p>
-        <h2 class="main-title">معمل <span class="neon-green-text">الفيديو</span></h2>
-        <p style="color:#8892b0">شاهد دروسك بأعلى جودة أو استمع إليها كبودكاست</p>
-    </div>
+    <header class="page-header">
+        <p class="subtitle">Premium Learning Experience</p>
+        <h2 class="main-title">مختبر <span style="color:var(--cyber-green)">الفيديو الذكي</span></h2>
+        <p style="color:#8892b0; margin-top:15px;">شاهد المحتوى بدون إعلانات وبسرعة فائقة</p>
+    </header>
 
-    <section class="container">
-        <div class="grid-container">
-            
-            <div class="video-card" data-video="v0FAN5ieUPc">
-                <div class="vid-thumb">
-                    <img src="https://img.youtube.com/vi/v0FAN5ieUPc/maxresdefault.jpg" alt="thumbnail" loading="lazy">
-                    <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-                    
-                    <div class="audio-visualizer">
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    </div>
-                </div>
-                
-                <div class="vid-info">
-                    <span class="vid-cat">الدرس الأول</span>
-                    <h3>قصة اكتشاف الحمض النووي | الدحيح</h3>
-                    
-                    <div class="audio-actions">
-                        <button class="btn-listen"><i class="fa-solid fa-headphones"></i> استمع كريكورد</button>
-                    </div>
-                </div>
+    <main class="container">
+        <div class="grid-container" id="videoGrid">
             </div>
-
-            <div class="video-card" data-video="qtxquLkeNak">
-                <div class="vid-thumb">
-                    <img src="https://img.youtube.com/vi/qtxquLkeNak/maxresdefault.jpg" alt="thumbnail" loading="lazy">
-                    <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-                    <div class="audio-visualizer">
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    </div>
-                </div>
-                <div class="vid-info">
-                    <span class="vid-cat">الوراثة</span>
-                    <h3>هل فعلًا الدم عمره ما يبقى مياه؟ | الدحيح</h3>
-                    <div class="audio-actions">
-                        <button class="btn-listen"><i class="fa-solid fa-headphones"></i> استمع كريكورد</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="video-card" data-video="DVryY-MqMSM">
-                <div class="vid-thumb">
-                    <img src="https://img.youtube.com/vi/DVryY-MqMSM/maxresdefault.jpg" alt="thumbnail" loading="lazy">
-                    <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-                    <div class="audio-visualizer">
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    </div>
-                </div>
-                <div class="vid-info">
-                    <span class="vid-cat">الأنزيمات</span>
-                    <h3>الدحيح | علم الوراثة</h3>
-                    <div class="audio-actions">
-                        <button class="btn-listen"><i class="fa-solid fa-headphones"></i> استمع كريكورد</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="video-card" data-video="RcBR7YDFkaA">
-                <div class="vid-thumb">
-                    <img src="https://img.youtube.com/vi/RcBR7YDFkaA/maxresdefault.jpg" alt="thumbnail" loading="lazy">
-                    <div class="play-btn"><i class="fa-solid fa-play"></i></div>
-                    <div class="audio-visualizer">
-                        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                    </div>
-                </div>
-                <div class="vid-info">
-                    <span class="vid-cat">الفسيولوجيا</span>
-                    <h3>تاريخ التشريح | الدحيح</h3>
-                    <div class="audio-actions">
-                        <button class="btn-listen"><i class="fa-solid fa-headphones"></i> استمع كريكورد</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </section>
+    </main>
 
     <footer>
-        <div class="footer-content">
-            <div class="footer-logo-area">
-                <div class="logo">
-                    <i class="fa-solid fa-heart-pulse"></i>
-                    <div class="logo-text"><span>الدكتور</span><small>BIOLOGY MASTER</small></div>
-                </div>
-                <p>منصة تعليمية متخصصة في علم الأحياء، تقدم شروحات ومحتوى عالي الجودة لطلاب الثانوية العامة.</p>
-            </div>
-            <div class="footer-links">
-                <a href="index.html">الرئيسية</a>
-                <a href="library.html">الكتب</a>
-                <a href="videos.html">الفيديوهات</a>
-                <a href="contact.html">تواصل معنا</a>
-            </div>
-            <div class="footer-socials">
-                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
-            </div>
-        </div>
         <div class="footer-bottom">
-            <p>جميع الحقوق محفوظة © 2026 | تم التطوير بحب <i class="fa-solid fa-heart"></i> بواسطة فريق عبقرينو & كيمو</p>
+            <p>جميع الحقوق محفوظة © 2026 | الدكتور في الأحياء</p>
         </div>
     </footer>
 
     <script>
-        // سكريبت القائمة (النافبار)
+        // قائمة الفيديوهات الـ 12 التي أرسلتها
+        const videos = [
+            { id: 'v0FAN5ieUPc', title: 'قصة اكتشاف الحمض النووي (DNA)', cat: 'الوراثة الجزئية' },
+            { id: 'DVryY-MqMSM', title: 'الأنزيمات وكيف تعمل داخل أجسامنا', cat: 'الكيمياء الحيوية' },
+            { id: 'qtxquLkeNak', title: 'هل الدم فعلاً عمره ما يبقى مياه؟', cat: 'وراثة الدم' },
+            { id: 'RcBR7YDFkaA', title: 'تاريخ التشريح البشري عبر العصور', cat: 'علم الفسيولوجيا' },
+            { id: '3gyeOcpdc6g', title: 'الخلية: رحلة في أصغر مصنع في الكون', cat: 'علم الخلية' },
+            { id: 'H1hGOo0d1Vo', title: 'كيف نفكر؟ الجهاز العصبي المركزي', cat: 'التنسيق العصبي' },
+            { id: 'qM6jPrMPTKk', title: 'المناعة: جيش جسمك السري', cat: 'علم المناعة' },
+            { id: 'jDs55BiCSBk', title: 'الهرمونات: رسائل كيميائية تغير حياتك', cat: 'التنسيق الهرموني' },
+            { id: '9ZTCUyhoknU', title: 'التكاثر في الكائنات الحية', cat: 'التكاثر' },
+            { id: 'eCg6Ybtl2sA', title: 'التنفس الخلوي وإنتاج الطاقة ATP', cat: 'عمليات الحيوية' },
+            { id: '9n-Ne3in2rg', title: 'التطور والارتقاء في الكائنات', cat: 'علم الأحياء العام' },
+            { id: 'DVryY-MqMSM', title: 'مراجعة الأنزيمات والتمثيل الغذائي', cat: 'مراجعة نهائية' }
+        ];
+
+        const grid = document.getElementById('videoGrid');
+
+        // توليد الكروت تلقائياً
+        videos.forEach(vid => {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.innerHTML = `
+                <div class="vid-thumb" onclick="playVideo(this, '${vid.id}')">
+                    <img src="https://img.youtube.com/vi/${vid.id}/maxresdefault.jpg" alt="${vid.title}" loading="lazy">
+                    <div class="play-btn"><i class="fa-solid fa-play"></i></div>
+                    <div class="audio-visualizer">
+                        <div class="bar" style="animation-delay:0.1s"></div>
+                        <div class="bar" style="animation-delay:0.3s"></div>
+                        <div class="bar" style="animation-delay:0.5s"></div>
+                        <div class="bar" style="animation-delay:0.2s"></div>
+                    </div>
+                </div>
+                <div class="vid-info">
+                    <span class="vid-cat">${vid.cat}</span>
+                    <h3>${vid.title}</h3>
+                    <div class="audio-actions">
+                        <button class="btn-listen" onclick="toggleAudio(this, '${vid.id}')">
+                            <i class="fa-solid fa-headphones"></i> استمع كريكورد
+                        </button>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // تشغيل الفيديو فوراً (إلغاء الإعلانات)
+        function playVideo(container, id) {
+            if (container.querySelector('iframe')) return;
+            
+            // إضافة بارامترات السرعة ومنع الإعلانات
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&showinfo=0`;
+            iframe.style.position = 'absolute';
+            iframe.style.top = '0';
+            iframe.style.left = '0';
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = '0';
+            iframe.setAttribute('allow', 'autoplay; encrypted-media');
+            
+            container.innerHTML = '';
+            container.appendChild(iframe);
+        }
+
+        // تشغيل الصوت فقط (بودكاست)
+        function toggleAudio(btn, id) {
+            const card = btn.closest('.video-card');
+            const visualizer = card.querySelector('.audio-visualizer');
+            const isPlaying = btn.classList.contains('playing');
+
+            // إيقاف أي مشغل صوتي آخر شغال
+            document.querySelectorAll('.btn-listen.playing').forEach(b => {
+                if(b !== btn) b.click(); 
+            });
+
+            if (!isPlaying) {
+                const audioPlayer = document.createElement('iframe');
+                audioPlayer.className = 'hidden-audio-player';
+                audioPlayer.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+                card.appendChild(audioPlayer);
+                
+                btn.innerHTML = '<i class="fa-solid fa-stop"></i> إيقاف';
+                btn.classList.add('playing');
+                visualizer.classList.add('active');
+            } else {
+                const player = card.querySelector('.hidden-audio-player');
+                if(player) player.remove();
+                
+                btn.innerHTML = '<i class="fa-solid fa-headphones"></i> استمع كريكورد';
+                btn.classList.remove('playing');
+                visualizer.classList.remove('active');
+            }
+        }
+
         const menuBtn = document.querySelector('.menu-btn');
         const navLinks = document.querySelector('.nav-links');
         menuBtn.addEventListener('click', () => {
             navLinks.classList.toggle('active');
             menuBtn.innerHTML = navLinks.classList.contains('active') ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
         });
-
-        // 🚀 نظام 2090 الذكي للفيديو والصوت 🚀
-        const videoCards = document.querySelectorAll('.video-card');
-
-        videoCards.forEach(card => {
-            const videoId = card.getAttribute('data-video');
-            const thumbContainer = card.querySelector('.vid-thumb');
-            const listenBtn = card.querySelector('.btn-listen');
-            const visualizer = card.querySelector('.audio-visualizer');
-            
-            let isAudioPlaying = false;
-
-            // 1. تشغيل الفيديو (الصورة والصوت) عند الضغط على الصورة المصغرة
-            thumbContainer.addEventListener('click', function(e) {
-                // منع التفاعل إذا كان الصوت يعمل أو إذا تم تشغيل الفيديو مسبقاً
-                if (isAudioPlaying || thumbContainer.querySelector('iframe:not(.hidden-audio-player)')) return;
-
-                // إنشاء مشغل الفيديو المرئي
-                const iframe = document.createElement('iframe');
-                iframe.setAttribute('src', `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`);
-                iframe.setAttribute('frameborder', '0');
-                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-                iframe.setAttribute('allowfullscreen', 'true');
-
-                // مسح محتوى الصورة وإضافة الفيديو
-                const img = this.querySelector('img');
-                const btn = this.querySelector('.play-btn');
-                if(img) img.remove();
-                if(btn) btn.remove();
-                
-                this.appendChild(iframe);
-                card.style.transform = 'none';
-            });
-
-            // 2. تشغيل/إيقاف الصوت فقط (ريكورد) عند الضغط على زر الاستماع
-            listenBtn.addEventListener('click', function(e) {
-                e.stopPropagation(); // لمنع تشغيل مشغل الفيديو المرئي بالخطأ
-                
-                // التأكد أن الفيديو المرئي لا يعمل الآن، لو يعمل، نمنع تشغيل الصوت فوقه
-                if (thumbContainer.querySelector('iframe:not(.hidden-audio-player)')) {
-                    alert("الفيديو يعمل بالفعل! قم بتحديث الصفحة إذا كنت تريد الاستماع للصوت فقط.");
-                    return;
-                }
-
-                if (!isAudioPlaying) {
-                    // تشغيل الصوت (إضافة إطار يوتيوب مخفي)
-                    const hiddenIframe = document.createElement('iframe');
-                    hiddenIframe.className = 'hidden-audio-player';
-                    hiddenIframe.setAttribute('src', `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`);
-                    hiddenIframe.setAttribute('allow', 'autoplay');
-                    
-                    card.appendChild(hiddenIframe); // وضعه داخل الكارت لسهولة مسحه
-                    
-                    // تغيير شكل الزر وواجهة الصورة
-                    listenBtn.innerHTML = '<i class="fa-solid fa-stop"></i> إيقاف الصوت';
-                    listenBtn.classList.add('playing');
-                    visualizer.classList.add('active');
-                    isAudioPlaying = true;
-                } else {
-                    // إيقاف الصوت (مسح الإطار المخفي)
-                    const audioPlayer = card.querySelector('.hidden-audio-player');
-                    if(audioPlayer) audioPlayer.remove();
-                    
-                    // إعادة شكل الزر وواجهة الصورة
-                    listenBtn.innerHTML = '<i class="fa-solid fa-headphones"></i> استمع كريكورد';
-                    listenBtn.classList.remove('playing');
-                    visualizer.classList.remove('active');
-                    isAudioPlaying = false;
-                }
-            });
-        });
-    </script>
-
-    <!-- نظام الإشعارات الذكي -->
-    <div id="fire-notification" class="fire-toast">
-        <i class="fa-solid fa-fire-flame-curved"></i>
-        <div>
-            <h4>تنبيه عاجل من الدكتور</h4>
-            <small>اضغط للذهاب لمركز الرسائل</small>
-        </div>
-    </div>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
-
-        const firebaseConfig = { apiKey: "AIzaSyD092yeOowtCLW0fDcIzaEXrnxvrN4X5T8", authDomain: "abqarieno.firebaseapp.com", databaseURL: "https://abqarieno-default-rtdb.firebaseio.com", projectId: "abqarieno", storageBucket: "abqarieno.firebasestorage.app", messagingSenderId: "790682500839", appId: "1:790682500839:web:cd50b8e01729f821e06c42" };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        
-        const notif = document.getElementById('fire-notification');
-        const contactLink = document.querySelector('a[href="contact.html"]');
-        const loadTime = Date.now();
-
-        onChildAdded(query(ref(db, 'broadcasts'), limitToLast(1)), (snapshot) => {
-            const msg = snapshot.val();
-            if(msg.timestamp > loadTime) {
-                notif.classList.add('show');
-                setTimeout(() => notif.classList.remove('show'), 6000);
-                if(contactLink) contactLink.classList.add('has-new');
-            }
-        });
-        notif.onclick = () => window.location.href = 'contact.html';
     </script>
 </body>
 </html>

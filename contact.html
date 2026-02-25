@@ -129,9 +129,8 @@
             <li><a href="library.html">الكتب</a></li>
             <li><a href="videos.html">الفيديوهات</a></li>
             <li><a href="schedule.html">الجدول</a></li>
-            <li><a href="reviews.html">التقييمات</a></li>
+            <li><a href="reviews.html">ورق الشرح</a></li>
             <li><a href="contact.html" class="active">تواصل معنا</a></li>
-            <li class="nav-special-mobile"><a href="scientific-books.html">الكتب النادرة</a></li>
         </ul>
         <a href="scientific-books.html" class="btn-nav-special">الكتب العلمية النادرة</a>
         <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
@@ -218,7 +217,7 @@
 
         // التحقق
         window.checkMaster = function() {
-            if(prompt("كود المستر:") === "2027") {
+            if(prompt("كود المستر:") === "222") {
                 sessionStorage.setItem('biology_user_role', 'master'); // حفظ مؤقت للجلسة فقط
                 location.reload(); 
             } else alert("خطأ!");
@@ -231,7 +230,7 @@
 
         window.switchRole = function() {
             const code = prompt("أدخل كود المستر للتبديل:");
-            if(code === "2027") {
+            if(code === "222") {
                 localStorage.removeItem('biology_user_role'); // إزالة تسجيل الطالب
                 sessionStorage.setItem('biology_user_role', 'master'); // تفعيل المستر
                 location.reload();
