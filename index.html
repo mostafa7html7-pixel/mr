@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="منصة الدكتور التعليمية للأحياء - شرح مبسط، فيديوهات عالية الجودة، كتب وملازم مجانية، ومتابعة مستمرة لطلاب الثانوية العامة.">
+    <meta name="keywords" content="أحياء, ثانوية عامة, دكتور عبدالله, منصة تعليمية, شرح أحياء, مراجعات, امتحانات, كتب pdf">
     <title>الرئيسية - الدكتور</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="6.jpeg">
     <style>
         @media (max-width: 992px) {
             .grid-container.grid-3 {
@@ -41,8 +45,25 @@
             }
         }
     </style>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOUR_MEASUREMENT_ID"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-YOUR_MEASUREMENT_ID');
+    </script>
 </head>
 <body>
+    <!-- Page Loader -->
+    <div id="page-loader">
+        <div class="loader-content">
+            <i class="fa-solid fa-heart-pulse loader-icon"></i>
+            <div class="loader-text">الدكتور <small>جاري التحميل...</small></div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="logo">
             <i class="fa-solid fa-heart-pulse"></i>
@@ -85,7 +106,7 @@
             </div>
             
             <div class="hero-image scroll-animate" style="transition-delay: 0.5s;">
-                <img src="212.png" alt="دكتور عبدالله" class="doctor-img" loading="lazy">
+                <img src="212.png" alt="دكتور عبدالله" class="doctor-img" fetchpriority="high">
             </div>
         </div>
     </section>
@@ -297,6 +318,12 @@
             if (e.target === document.getElementById('newsOverlay')) {
                 window.closeNewsModal();
             }
+        });
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('page-loader').classList.add('loader-hidden');
+            }, 1000);
         });
     </script>
 </body>

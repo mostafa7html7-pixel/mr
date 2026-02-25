@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="شاهد أقوى شروحات الأحياء مع الدكتور. فيديوهات بجودة عالية تغطي الوراثة، المناعة، البيولوجيا الجزيئية والمزيد.">
+    <meta name="keywords" content="فيديوهات أحياء, شرح يوتيوب, وراثه, مناعة, هرمونات, دكتور أحياء, شرح ثانوية عامة, بيولوجيا">
     <title>الفيديوهات - الدكتور | الجيل القادم</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         /* --- ستايلات الهوية البصرية (Cyber-Biology) --- */
@@ -168,6 +173,14 @@
 </head>
 <body>
 
+    <!-- Page Loader -->
+    <div id="page-loader">
+        <div class="loader-content">
+            <i class="fa-solid fa-heart-pulse loader-icon"></i>
+            <div class="loader-text">الدكتور <small>جاري التحميل...</small></div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="logo">
             <i class="fa-solid fa-heart-pulse"></i>
@@ -265,6 +278,12 @@
         menuBtn.addEventListener('click', () => {
             navLinks.classList.toggle('active');
             menuBtn.innerHTML = navLinks.classList.contains('active') ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
+        });
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('page-loader').classList.add('loader-hidden');
+            }, 1000);
         });
     </script>
 

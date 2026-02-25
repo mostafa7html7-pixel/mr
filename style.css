@@ -1,6 +1,4 @@
 /* style.css - ملف التصميم لكل الصفحات */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;500;600;700&display=swap');
 
 :root {
     --bg-color: #020202;
@@ -43,6 +41,12 @@
 body { background-color: var(--bg-color); color: var(--text-white); direction: rtl; }
 a { text-decoration: none; color: inherit; transition: 0.3s; }
 ul { list-style: none; }
+
+/* إلغاء الإطار الأزرق عند التركيز */
+a:focus, button:focus, input:focus, textarea:focus {
+    outline: none;
+    box-shadow: none; /* بعض المتصفحات تستخدم ظلاً بدلاً من الإطار */
+}
 
 .navbar {
     display: flex;
@@ -90,7 +94,16 @@ ul { list-style: none; }
 .nav-links a:hover::after, .nav-links a.active::after {
     width: 50%;
 }
-.menu-btn { display: none; font-size: 1.8rem; color: var(--neon-gold); cursor: pointer; transition: 0.3s; }
+.menu-btn { 
+    display: none; 
+    font-size: 1.8rem; 
+    color: var(--neon-gold); 
+    cursor: pointer; 
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s; /* حركة سريعة جداً */
+    -webkit-tap-highlight-color: transparent; /* إزالة الضوء الأزرق عند اللمس */
+    user-select: none;
+}
+.menu-btn:active { transform: scale(0.8); color: var(--neon-green); } /* تأثير ضغط قوي */
 
 .btn-main { background: var(--neon-red); color: white; padding: 8px 25px; border-radius: 20px; font-weight: bold; box-shadow: 0 0 10px rgba(255,0,0,0.4); }
 
@@ -697,3 +710,20 @@ footer {
     font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn-mark-read:hover { background: var(--neon-green); color: #000; }
+
+/* --- Page Loader --- */
+#page-loader {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #020202; z-index: 999999;
+    display: flex; justify-content: center; align-items: center;
+    transition: opacity 0.6s ease, visibility 0.6s;
+}
+.loader-content { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.loader-icon {
+    font-size: 4rem; color: var(--neon-green);
+    animation: heartBeat 1.2s infinite;
+    filter: drop-shadow(0 0 20px var(--neon-green));
+}
+.loader-text { font-family: 'Reem Kufi', sans-serif; font-size: 1.5rem; color: #fff; letter-spacing: 2px; }
+.loader-text small { display: block; font-size: 0.9rem; color: #888; margin-top: 5px; font-family: 'Cairo', sans-serif; }
+.loader-hidden { opacity: 0; visibility: hidden; }
