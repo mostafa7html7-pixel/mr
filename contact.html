@@ -155,16 +155,6 @@
         </div>
     </div>
 
-    <div id="gate-overlay">
-        <div style="text-align: center; background: var(--glass-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--accent-glow);">
-            <i class="fa-solid fa-microscope" style="font-size: 3rem; color: var(--master-neon); margin-bottom: 20px;"></i>
-            <h2>سيرفر الدكتور</h2>
-            <p style="color: #666; margin-bottom: 25px;">اختر وضع الدخول للمتابعة</p>
-            <button onclick="enterAs('student')" style="width:100%; padding:12px; margin-bottom:10px; background:#1a2332; color:#fff; border:none; border-radius:8px; cursor:pointer;">دخول الطلاب (للمتابعة)</button>
-            <button onclick="checkMaster()" style="width:100%; padding:12px; background:var(--master-neon); color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">دخول المستر (إدارة)</button>
-        </div>
-    </div>
-
     <nav class="navbar">
         <div class="logo">
             <i class="fa-solid fa-heart-pulse"></i>
@@ -178,6 +168,7 @@
             <li><a href="reviews.html">ورق الشرح</a></li>
             <li><a href="contact.html" class="active">تواصل معنا</a></li>
         </ul>
+        <button onclick="logout()" style="background:transparent; border:1px solid #333; color:#fff; padding:5px 10px; border-radius:5px; cursor:pointer; margin-left:10px; font-size:0.8rem;"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
         <button id="themeToggle" class="theme-toggle" title="تبديل الوضع"><i class="fa-solid fa-moon"></i></button>
         <button id="installAppBtn" class="btn-nav-install" style="display: none;">
             <i class="fa-solid fa-download"></i>
@@ -225,16 +216,12 @@
         <div style="font-size: 0.8rem; color: #444;">
             تطوير وإدارة فريق <span style="color: var(--master-neon);">عبقرينو وكريم</span> &copy; 2026
         </div>
-        <div style="margin-top: 15px;">
-            <button onclick="switchRole()" style="background: transparent; border: 1px solid #333; color: #666; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; transition: 0.3s;">
-                <i class="fa-solid fa-user-shield"></i> دخول المستر (تبديل)
-            </button>
-        </div>
     </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded, onChildRemoved, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, onChildRemoved, serverTimestamp, remove, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD092yeOowtCLW0fDcIzaEXrnxvrN4X5T8",
@@ -248,45 +235,32 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const auth = getAuth(app);
         const messagesRef = ref(db, 'broadcasts');
 
-        // --- نظام حفظ الهوية (Persistence System) ---
-        // التعديل: الطالب دائم (localStorage)، المستر مؤقت (sessionStorage)
-        const sessionRole = sessionStorage.getItem('biology_user_role');
-        const localRole = localStorage.getItem('biology_user_role');
-        
-        const isMaster = sessionRole === 'master';
-        const isStudent = localRole === 'student';
+        let isMaster = false; // سيتم تحديدها من خلال Firebase
 
-        if (isMaster || isStudent) {
-            document.getElementById('gate-overlay').style.display = 'none';
-        }
+        // --- نظام المصادقة الموحد ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // المستخدم مسجل دخوله
+                document.getElementById('page-loader').classList.remove('loader-hidden'); // التأكد من إخفاء شاشة التحميل
+                
+                // التحقق من صلاحيات المستخدم (أدمن أم طالب)
+                const userRef = ref(db, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                if (snapshot.exists() && snapshot.val().role === 'admin') {
+                    isMaster = true;
+                    document.getElementById('master-panel').style.display = 'block';
+                }
+            } else {
+                // لا يوجد مستخدم، توجيه لصفحة الدخول
+                window.location.href = 'auth.html';
+            }
+        });
 
-        if (isMaster) {
-            document.getElementById('master-panel').style.display = 'block';
-        }
-
-        // التحقق
-        window.checkMaster = function() {
-            if(prompt("كود المستر:") === "222") {
-                sessionStorage.setItem('biology_user_role', 'master'); // حفظ مؤقت للجلسة فقط
-                location.reload(); 
-            } else alert("خطأ!");
-        }
-
-        window.enterAs = function(role) {
-            if(role === 'student') localStorage.setItem('biology_user_role', 'student'); // حفظ دائم للطالب
-            document.getElementById('gate-overlay').style.display = 'none';
-        }
-
-        window.switchRole = function() {
-            const code = prompt("أدخل كود المستر للتبديل:");
-            if(code === "222") {
-                localStorage.removeItem('biology_user_role'); // إزالة تسجيل الطالب
-                sessionStorage.setItem('biology_user_role', 'master'); // تفعيل المستر
-                location.reload();
-            } else if(code !== null) alert("الكود غير صحيح");
-        }
+        // دالة تسجيل الخروج
+        window.logout = () => signOut(auth);
 
         window.handleFileSelect = () => {
             const file = document.getElementById('fileInput').files[0];
