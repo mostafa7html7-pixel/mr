@@ -7,11 +7,13 @@
     <meta name="keywords" content="أحياء, ثانوية عامة, دكتور عبدالله, منصة تعليمية, شرح أحياء, مراجعات, امتحانات, كتب pdf">
     <title>الرئيسية - الدكتور</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
     <link rel="preload" as="image" href="6.jpeg">
     <style>
         @media (max-width: 992px) {
@@ -45,6 +47,23 @@
             }
         }
     </style>
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "منصة الدكتور التعليمية للأحياء",
+      "url": "https://abqarieno.firebaseapp.com/index.html",
+      "logo": "https://abqarieno.firebaseapp.com/212.png",
+      "description": "منصة الدكتور التعليمية للأحياء - شرح مبسط، فيديوهات عالية الجودة، كتب وملازم مجانية، ومتابعة مستمرة لطلاب الثانوية العامة.",
+      "founder": {
+        "@type": "Person",
+        "name": "دكتور عبدالله",
+        "jobTitle": "مدرس أحياء",
+        "image": "https://abqarieno.firebaseapp.com/212.png"
+      }
+    }
+    </script>
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YOUR_MEASUREMENT_ID"></script>
     <script>
@@ -77,6 +96,11 @@
             <li><a href="reviews.html">ورق الشرح</a></li>
             <li><a href="contact.html">تواصل معنا</a></li>
         </ul>
+        <button id="themeToggle" class="theme-toggle" title="تبديل الوضع"><i class="fa-solid fa-moon"></i></button>
+        <button id="installAppBtn" class="btn-nav-install" style="display: none;">
+            <i class="fa-solid fa-download"></i>
+            <span>تثبيت التطبيق</span>
+        </button>
         <a href="scientific-books.html" class="btn-nav-special">الكتب العلمية النادرة</a>
         <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
     </nav>
@@ -324,6 +348,54 @@
             setTimeout(() => {
                 document.getElementById('page-loader').classList.add('loader-hidden');
             }, 1000);
+        });
+
+        // تسجيل Service Worker للتخزين المؤقت والعمل بدون إنترنت
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+        }
+
+        // كود تثبيت التطبيق PWA
+        let deferredPrompt;
+        const installBtn = document.getElementById('installAppBtn');
+
+        // إظهار الزر إذا لم يكن التطبيق مثبتاً
+        if (!window.matchMedia('(display-mode: standalone)').matches) {
+            installBtn.style.display = 'flex';
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') installBtn.style.display = 'none';
+                deferredPrompt = null;
+            } else {
+                alert('لتثبيت التطبيق، يرجى استخدام خيار "الإضافة إلى الشاشة الرئيسية" من إعدادات المتصفح.');
+            }
+        });
+
+        // كود الوضع الليلي/النهاري
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.add('light-mode');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            icon.className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         });
     </script>
 </body>

@@ -7,10 +7,22 @@
     <meta name="keywords" content="كتب علمية, مراجع أحياء, كتب نادرة, كتب طبية, بيولوجيا, مراجع عالمية, كتب للمتفوقين">
     <title>الكتب العلمية النادرة - الدكتور</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "الكتب العلمية النادرة في علم الأحياء",
+      "description": "مجموعة حصرية من أندر المراجع والكتب العالمية في علم الأحياء، متاحة الآن لطلاب الدكتور.",
+      "url": "https://abqarieno.firebaseapp.com/scientific-books.html"
+    }
+    </script>
     <link rel="preload" as="image" href="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?q=80&w=1920&auto=format&fit=crop">
     <style>
         @media (max-width: 768px) {
@@ -47,6 +59,11 @@
             <li><a href="reviews.html">ورق الشرح</a></li>
             <li><a href="contact.html">تواصل معنا</a></li>
         </ul>
+        <button id="themeToggle" class="theme-toggle" title="تبديل الوضع"><i class="fa-solid fa-moon"></i></button>
+        <button id="installAppBtn" class="btn-nav-install" style="display: none;">
+            <i class="fa-solid fa-download"></i>
+            <span>تثبيت التطبيق</span>
+        </button>
         <a href="scientific-books.html" class="btn-nav-special">الكتب العلمية النادرة</a>
         <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
     </nav>
@@ -73,6 +90,49 @@
             setTimeout(() => {
                 document.getElementById('page-loader').classList.add('loader-hidden');
             }, 1000);
+        });
+
+        // كود تثبيت التطبيق PWA
+        let deferredPrompt;
+        const installBtn = document.getElementById('installAppBtn');
+
+        // إظهار الزر إذا لم يكن التطبيق مثبتاً
+        if (!window.matchMedia('(display-mode: standalone)').matches) {
+            installBtn.style.display = 'flex';
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') installBtn.style.display = 'none';
+                deferredPrompt = null;
+            } else {
+                alert('لتثبيت التطبيق، يرجى استخدام خيار "الإضافة إلى الشاشة الرئيسية" من إعدادات المتصفح.');
+            }
+        });
+
+        // كود الوضع الليلي/النهاري
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.add('light-mode');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            icon.className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         });
     </script>
 

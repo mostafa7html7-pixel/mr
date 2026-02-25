@@ -7,10 +7,47 @@
     <meta name="keywords" content="فيديوهات أحياء, شرح يوتيوب, وراثه, مناعة, هرمونات, دكتور أحياء, شرح ثانوية عامة, بيولوجيا">
     <title>الفيديوهات - الدكتور | الجيل القادم</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "قائمة فيديوهات الأحياء",
+      "description": "شروحات الدكتور في مادة الأحياء لطلاب الثانوية العامة.",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "VideoObject",
+            "name": "قصة اكتشاف الحمض النووي (DNA)",
+            "description": "فيديو يشرح تاريخ وتفاصيل اكتشاف الحمض النووي DNA.",
+            "thumbnailUrl": "https://img.youtube.com/vi/v0FAN5ieUPc/maxresdefault.jpg",
+            "uploadDate": "2024-01-01",
+            "embedUrl": "https://www.youtube.com/embed/v0FAN5ieUPc"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "VideoObject",
+            "name": "الأنزيمات وكيف تعمل داخل أجسامنا",
+            "description": "شرح تفصيلي لآلية عمل الأنزيمات وأهميتها في الكيمياء الحيوية.",
+            "thumbnailUrl": "https://img.youtube.com/vi/DVryY-MqMSM/maxresdefault.jpg",
+            "uploadDate": "2024-01-01",
+            "embedUrl": "https://www.youtube.com/embed/DVryY-MqMSM"
+          }
+        }
+      ]
+    }
+    </script>
     
     <style>
         /* --- ستايلات الهوية البصرية (Cyber-Biology) --- */
@@ -28,6 +65,22 @@
             font-family: 'Cairo', sans-serif;
             margin: 0;
             overflow-x: hidden;
+        }
+
+        /* Light Mode Overrides */
+        body.light-mode {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        body.light-mode .video-card {
+            background: #fff;
+            border-color: #ddd;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        body.light-mode .main-title {
+            background: linear-gradient(to bottom, #333 30%, #000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .page-header {
@@ -169,6 +222,25 @@
             background: var(--cyber-green);
             color: #000;
         }
+
+        /* أزرار المشاركة */
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .share-btn {
+            width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 0.9rem; transition: 0.3s; cursor: pointer; text-decoration: none;
+        }
+        .share-btn:hover { transform: translateY(-3px); }
+        .share-wa { background: #25D366; }
+        .share-fb { background: #1877F2; }
+        .share-tg { background: #0088cc; }
+        .share-cp { background: #555; }
     </style>
 </head>
 <body>
@@ -194,6 +266,11 @@
             <li><a href="reviews.html">ورق الشرح</a></li>
             <li><a href="contact.html">تواصل معنا</a></li>
         </ul>
+        <button id="themeToggle" class="theme-toggle" title="تبديل الوضع"><i class="fa-solid fa-moon"></i></button>
+        <button id="installAppBtn" class="btn-nav-install" style="display: none;">
+            <i class="fa-solid fa-download"></i>
+            <span>تثبيت التطبيق</span>
+        </button>
         <a href="scientific-books.html" class="btn-nav-special">الكتب العلمية النادرة</a>
         <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
     </nav>
@@ -236,6 +313,7 @@
 
         // توليد الكروت تلقائياً
         videos.forEach(vid => {
+            const vidUrl = `https://www.youtube.com/watch?v=${vid.id}`;
             const card = document.createElement('div');
             card.className = 'video-card';
             card.innerHTML = `
@@ -249,6 +327,12 @@
                     <a href="https://www.youtube.com/watch?v=${vid.id}" target="_blank" class="btn-download-vid">
                         <i class="fa-solid fa-download"></i> تحميل الفيديو
                     </a>
+                    <div class="share-buttons">
+                        <a href="https://wa.me/?text=${encodeURIComponent(vid.title + ' ' + vidUrl)}" target="_blank" class="share-btn share-wa" title="مشاركة عبر واتساب"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(vidUrl)}" target="_blank" class="share-btn share-fb" title="مشاركة عبر فيسبوك"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://t.me/share/url?url=${encodeURIComponent(vidUrl)}&text=${encodeURIComponent(vid.title)}" target="_blank" class="share-btn share-tg" title="مشاركة عبر تليجرام"><i class="fa-brands fa-telegram"></i></a>
+                        <div onclick="navigator.clipboard.writeText('${vidUrl}'); alert('تم نسخ الرابط!')" class="share-btn share-cp" title="نسخ الرابط"><i class="fa-solid fa-link"></i></div>
+                    </div>
                 </div>
             `;
             grid.appendChild(card);
@@ -284,6 +368,49 @@
             setTimeout(() => {
                 document.getElementById('page-loader').classList.add('loader-hidden');
             }, 1000);
+        });
+
+        // كود تثبيت التطبيق PWA
+        let deferredPrompt;
+        const installBtn = document.getElementById('installAppBtn');
+
+        // إظهار الزر إذا لم يكن التطبيق مثبتاً
+        if (!window.matchMedia('(display-mode: standalone)').matches) {
+            installBtn.style.display = 'flex';
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') installBtn.style.display = 'none';
+                deferredPrompt = null;
+            } else {
+                alert('لتثبيت التطبيق، يرجى استخدام خيار "الإضافة إلى الشاشة الرئيسية" من إعدادات المتصفح.');
+            }
+        });
+
+        // كود الوضع الليلي/النهاري
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.add('light-mode');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            icon.className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         });
     </script>
 

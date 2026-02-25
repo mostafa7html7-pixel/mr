@@ -7,10 +7,46 @@
     <meta name="keywords" content="جدول حصص, مواعيد دروس, مجموعات أحياء, أولى ثانوي, سنتر تعليمي, حجز دروس, مواعيد الدكتور">
     <title>الجدول - الدكتور</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EventSeries",
+      "name": "حصص الأحياء للصف الأول الثانوي",
+      "description": "جدول مواعيد مجموعات دروس الأحياء مع الدكتور للصف الأول الثانوي.",
+      "startDate": "2025-09-01",
+      "endDate": "2026-05-30",
+      "location": {
+        "@type": "Place",
+        "name": "السنتر التعليمي",
+        "address": "عنوان السنتر"
+      },
+      "organizer": {
+        "@type": "Person",
+        "name": "دكتور عبدالله"
+      },
+      "eventSchedule": [
+        {
+          "@type": "Schedule",
+          "byDay": [ "http://schema.org/Sunday", "http://schema.org/Wednesday" ],
+          "startTime": "14:00",
+          "endTime": "15:30"
+        },
+        {
+          "@type": "Schedule",
+          "byDay": [ "http://schema.org/Monday", "http://schema.org/Thursday" ],
+          "startTime": "14:00",
+          "endTime": "15:30"
+        }
+      ]
+    }
+    </script>
     <style>
         /* --- ستايلات الجدول الاحترافية الجديدة --- */
         :root {
@@ -36,6 +72,22 @@
             position: relative;
             overflow: hidden;
         }
+
+        /* Light Mode Overrides */
+        body.light-mode {
+            --bg-dark: #f8f9fa;
+            --card-bg: #ffffff;
+            color: #333;
+        }
+        body.light-mode .schedule-card {
+            background: #fff;
+            border-color: #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        body.light-mode .card-header h3 { color: #1a202c; }
+        body.light-mode .group-info .time { color: #2d3748; }
+        body.light-mode .group-info .name { color: #718096; }
+        body.light-mode .group-item { background: #f7fafc; }
 
         .schedule-card:hover {
             border-color: var(--accent-color);
@@ -137,6 +189,11 @@
             <li><a href="reviews.html">ورق الشرح</a></li>
             <li><a href="contact.html">تواصل معنا</a></li>
         </ul>
+        <button id="themeToggle" class="theme-toggle" title="تبديل الوضع"><i class="fa-solid fa-moon"></i></button>
+        <button id="installAppBtn" class="btn-nav-install" style="display: none;">
+            <i class="fa-solid fa-download"></i>
+            <span>تثبيت التطبيق</span>
+        </button>
         <a href="scientific-books.html" class="btn-nav-special">الكتب العلمية النادرة</a>
         <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
     </nav>
@@ -233,6 +290,49 @@
             setTimeout(() => {
                 document.getElementById('page-loader').classList.add('loader-hidden');
             }, 1000);
+        });
+
+        // كود تثبيت التطبيق PWA
+        let deferredPrompt;
+        const installBtn = document.getElementById('installAppBtn');
+
+        // إظهار الزر إذا لم يكن التطبيق مثبتاً
+        if (!window.matchMedia('(display-mode: standalone)').matches) {
+            installBtn.style.display = 'flex';
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') installBtn.style.display = 'none';
+                deferredPrompt = null;
+            } else {
+                alert('لتثبيت التطبيق، يرجى استخدام خيار "الإضافة إلى الشاشة الرئيسية" من إعدادات المتصفح.');
+            }
+        });
+
+        // كود الوضع الليلي/النهاري
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.add('light-mode');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            icon.className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         });
     </script>
 

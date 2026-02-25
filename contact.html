@@ -7,10 +7,22 @@
     <meta name="keywords" content="تواصل معنا, دعم فني, رسائل الدكتور, شات طلاب, استفسارات أحياء, متابعة الطلاب">
     <title>مركز رسائل الدكتور - 2028 Edition</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      "name": "تواصل مع الدكتور",
+      "description": "مركز الرسائل والدعم الفني لطلاب الدكتور في مادة الأحياء.",
+      "url": "https://abqarieno.firebaseapp.com/contact.html"
+    }
+    </script>
     <style>
         :root {
             --master-neon: #00f2ff;
@@ -28,6 +40,27 @@
             margin: 0;
             overflow-x: hidden;
         }
+
+        /* Light Mode Overrides */
+        body.light-mode {
+            background: #f0f2f5;
+            color: #333;
+        }
+        body.light-mode .chat-container {
+            background: #fff;
+            border-color: #ddd;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        body.light-mode .msg-block {
+            background: #f8f9fa;
+            color: #333;
+            border-right: 4px solid var(--master-neon);
+        }
+        body.light-mode .msg-content { color: #333; }
+        body.light-mode .master-input { background: #fff; color: #333; border: 1px solid #ddd; }
+        body.light-mode #master-panel { background: rgba(0, 242, 255, 0.1); }
+        body.light-mode footer { background: #e9ecef; border-top: 1px solid #ddd; color: #333; }
+        body.light-mode .f-card { background: #fff; color: #333; border-color: #ddd; }
 
         /* --- واجهة الشات المصغرة والأنيقة --- */
         .chat-wrapper { max-width: 800px; margin: 20px auto; padding: 0 15px; }
@@ -145,6 +178,11 @@
             <li><a href="reviews.html">ورق الشرح</a></li>
             <li><a href="contact.html" class="active">تواصل معنا</a></li>
         </ul>
+        <button id="themeToggle" class="theme-toggle" title="تبديل الوضع"><i class="fa-solid fa-moon"></i></button>
+        <button id="installAppBtn" class="btn-nav-install" style="display: none;">
+            <i class="fa-solid fa-download"></i>
+            <span>تثبيت التطبيق</span>
+        </button>
         <a href="scientific-books.html" class="btn-nav-special">الكتب العلمية النادرة</a>
         <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
     </nav>
@@ -196,7 +234,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, onChildRemoved, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD092yeOowtCLW0fDcIzaEXrnxvrN4X5T8",
@@ -272,18 +310,49 @@
             }
         }
 
-        // إرسال
-        window.pushMessage = function() {
+        // دالة ضغط الصور
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800; // أقصى عرض للصورة
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // ضغط الجودة إلى 70%
+                    };
+                };
+            });
+        }
+
+        // إرسال (معدلة للضغط)
+        window.pushMessage = async function() {
             const text = document.getElementById('msgInput').value;
-            const file = document.getElementById('fileInput').files[0];
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
             
             if(!text && !file) return;
 
+            let media = null;
             if(file) {
-                const reader = new FileReader();
-                reader.onload = (e) => send(text, e.target.result);
-                reader.readAsDataURL(file);
-            } else send(text, null);
+                if(file.type.startsWith('image/')) {
+                    media = await compressImage(file);
+                } else {
+                    media = await new Promise(resolve => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(file);
+                    });
+                }
+            }
+            send(text, media);
         }
 
         function send(t, m) {
@@ -294,39 +363,45 @@
             document.getElementById('imgPreview').style.display = 'none';
         }
 
-        // عرض
-        onValue(messagesRef, (snapshot) => {
-            const flow = document.getElementById('messages-flow');
-            flow.innerHTML = '';
-            const data = snapshot.val();
-            if(!data) {
-                flow.innerHTML = '<p style="text-align:center;color:#333;">لا يوجد رسائل حالياً.</p>';
-                return;
+        // عرض الرسائل (نظام سريع جداً)
+        const flow = document.getElementById('messages-flow');
+        // إزالة رسالة التحميل عند وصول أول رسالة
+        let firstLoad = true;
+
+        onChildAdded(messagesRef, (snapshot) => {
+            if(firstLoad) {
+                flow.innerHTML = '';
+                firstLoad = false;
             }
 
-            Object.keys(data).reverse().forEach(id => {
-                const m = data[id];
-                const date = m.timestamp ? new Date(m.timestamp).toLocaleTimeString('ar-EG') : 'الآن';
-                let mediaTag = '';
-                
-                if(m.media) {
-                    if(m.media.includes('data:image')) {
-                        mediaTag = `<img src="${m.media}" class="msg-media">
-                                    <a href="${m.media}" download="dr-image" class="download-btn"><i class="fa-solid fa-download"></i> حفظ الصورة</a>`;
-                    } else {
-                        mediaTag = `<a href="${m.media}" download="file" class="download-btn"><i class="fa-solid fa-file-arrow-down"></i> تحميل المرفق</a>`;
-                    }
+            const m = snapshot.val();
+            const id = snapshot.key;
+            const date = m.timestamp ? new Date(m.timestamp).toLocaleTimeString('ar-EG') : 'الآن';
+            let mediaTag = '';
+            
+            if(m.media) {
+                if(m.media.includes('data:image')) {
+                    mediaTag = `<img src="${m.media}" class="msg-media">
+                                <a href="${m.media}" download="dr-image" class="download-btn"><i class="fa-solid fa-download"></i> حفظ الصورة</a>`;
+                } else {
+                    mediaTag = `<a href="${m.media}" download="file" class="download-btn"><i class="fa-solid fa-file-arrow-down"></i> تحميل المرفق</a>`;
                 }
+            }
 
-                flow.insertAdjacentHTML('beforeend', `
-                    <div class="msg-block">
-                        <div class="msg-header"><span><i class="fa-solid fa-bullhorn" style="color:var(--master-neon)"></i> توجيه رسمي</span><span>${date}</span></div>
-                        <div class="msg-content">${m.text}</div>
-                        ${mediaTag}
-                        ${isMaster ? `<button onclick="deleteMsg('${id}')" class="btn-delete"><i class="fa-solid fa-trash-can"></i> حذف الرسالة نهائياً</button>` : ''}
-                    </div>
-                `);
-            });
+            const html = `
+                <div class="msg-block" id="msg-${id}">
+                    <div class="msg-header"><span><i class="fa-solid fa-bullhorn" style="color:var(--master-neon)"></i> توجيه رسمي</span><span>${date}</span></div>
+                    <div class="msg-content">${m.text}</div>
+                    ${mediaTag}
+                    ${isMaster ? `<button onclick="deleteMsg('${id}')" class="btn-delete"><i class="fa-solid fa-trash-can"></i> حذف الرسالة نهائياً</button>` : ''}
+                </div>
+            `;
+            flow.insertAdjacentHTML('afterbegin', html); // إضافة الرسالة الجديدة في الأعلى
+        });
+
+        onChildRemoved(messagesRef, (snapshot) => {
+            const el = document.getElementById(`msg-${snapshot.key}`);
+            if(el) el.remove();
         });
 
         window.deleteMsg = (id) => { 
@@ -353,6 +428,54 @@
             setTimeout(() => {
                 document.getElementById('page-loader').classList.add('loader-hidden');
             }, 1000);
+        });
+
+        // تسجيل Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+        }
+
+        // كود تثبيت التطبيق PWA
+        let deferredPrompt;
+        const installBtn = document.getElementById('installAppBtn');
+
+        // إظهار الزر إذا لم يكن التطبيق مثبتاً
+        if (!window.matchMedia('(display-mode: standalone)').matches) {
+            installBtn.style.display = 'flex';
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') installBtn.style.display = 'none';
+                deferredPrompt = null;
+            } else {
+                alert('لتثبيت التطبيق، يرجى استخدام خيار "الإضافة إلى الشاشة الرئيسية" من إعدادات المتصفح.');
+            }
+        });
+
+        // كود الوضع الليلي/النهاري
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+
+        if (localStorage.getItem('theme') === 'light') {
+            body.classList.add('light-mode');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            icon.className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         });
     </script>
 </body>
