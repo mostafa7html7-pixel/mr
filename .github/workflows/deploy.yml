@@ -1,26 +1,34 @@
-name: Auto Cache Buster
+name: Deploy Website with Auto-Cache-Bust
 
 on:
   push:
-    branches:
-      - main  # أو master حسب اسم الفرع عندك
+    branches: ["main"] # تأكد إن ده اسم الفرع عندك (main أو master)
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Cache Busting for all HTML files
+      - name: Inject Cache Buster (v=Hash)
         run: |
-          # هذا السطر يبحث عن كل ملفات الـ HTML في كل المجلدات
-          # ويقوم بإضافة بصمة (Hash) فريدة لكل روابط الـ CSS و JS
+          # هذا السطر بيلف على كل ملفات الـ HTML ويضيف بصمة فريدة لكل ملفات الـ CSS والـ JS
           find . -name "*.html" -exec sed -i 's/\.css/.css?v=${{ github.sha }}/g' {} +
           find . -name "*.html" -exec sed -i 's/\.js/.js?v=${{ github.sha }}/g' {} +
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
