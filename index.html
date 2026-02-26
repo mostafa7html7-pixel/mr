@@ -198,6 +198,12 @@
         </div>
     </div>
 
+    <!-- إشعار التحديث الجديد -->
+    <div id="update-toast" class="update-toast">
+        <span><i class="fa-solid fa-cloud-arrow-down"></i> يوجد تحديث جديد للمنصة!</span>
+        <button id="reload-button">تحديث الآن</button>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -363,19 +369,9 @@
             } else {
                 const img = document.createElement('img');
                 img.src = src;
-                img.id = 'zoom-img';
-                // إضافة منطق التكبير بالماوس
-                img.onmousemove = function(e) {
-                    const { left, top, width, height } = this.getBoundingClientRect();
-                    const x = (e.clientX - left) / width * 100;
-                    const y = (e.clientY - top) / height * 100;
-                    this.style.transformOrigin = `${x}% ${y}%`;
-                    this.style.transform = "scale(2)";
-                };
-                img.onmouseleave = function() {
-                    this.style.transform = "scale(1)";
-                    this.style.transformOrigin = "center center";
-                };
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '90vh';
+                img.style.borderRadius = '10px';
                 container.appendChild(img);
             }
             

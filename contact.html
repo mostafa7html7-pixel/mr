@@ -185,6 +185,12 @@
         </div>
     </nav>
 
+    <!-- عارض الصور الاحترافي (Lightbox) -->
+    <div id="lightbox-overlay" class="lightbox-overlay">
+        <span class="close-lightbox">&times;</span>
+        <div class="lightbox-content" id="lightbox-content"></div>
+    </div>
+
     <div class="chat-wrapper">
         <div class="live-status">
             <div class="pulse"></div>
@@ -380,12 +386,12 @@
             if(m.media) {
                 if(m.media.includes('data:image') || /\.(jpg|jpeg|png|gif|webp)$/i.test(m.media)) {
                     mediaTag = `<img src="${m.media}" class="msg-media" onclick="openLightbox('${m.media}', 'image')" style="cursor:pointer; max-width: 250px; border-radius: 8px; margin-top: 10px;">
-                                <a href="${m.media}" download="dr-image" class="download-btn"><i class="fa-solid fa-download"></i> حفظ الصورة</a>`;
+                                <a href="${m.media}" download="dr-image" target="_blank" class="download-btn"><i class="fa-solid fa-download"></i> حفظ الصورة</a>`;
                 } else if (m.media.includes('data:video') || /\.(mp4|webm|ogg)$/i.test(m.media)) {
                     mediaTag = `<video src="${m.media}" controls class="msg-video" style="max-width:100%; border-radius: 8px; margin-top: 12px;"></video>
-                                <a href="${m.media}" download="dr-video.mp4" class="download-btn"><i class="fa-solid fa-download"></i> تحميل الفيديو</a>`;
+                                <a href="${m.media}" download="dr-video.mp4" target="_blank" class="download-btn"><i class="fa-solid fa-download"></i> تحميل الفيديو</a>`;
                 } else {
-                    mediaTag = `<a href="${m.media}" download="file" class="download-btn"><i class="fa-solid fa-file-arrow-down"></i> تحميل المرفق</a>`;
+                    mediaTag = `<a href="${m.media}" download="file" target="_blank" class="download-btn"><i class="fa-solid fa-file-arrow-down"></i> تحميل المرفق</a>`;
                 }
             }
 
@@ -410,6 +416,42 @@
                 remove(ref(db, `broadcasts/${id}`)); 
             }
         }
+
+        // --- دوال عارض الصور (Lightbox) ---
+        window.openLightbox = function(src, type) {
+            const container = document.getElementById('lightbox-content');
+            const overlay = document.getElementById('lightbox-overlay');
+            
+            container.innerHTML = ''; // تنظيف المحتوى السابق
+            
+            if (type === 'video') {
+                container.innerHTML = `<video src="${src}" controls autoplay style="max-width:100%; max-height:90vh; border-radius:10px; box-shadow:0 0 50px rgba(0,255,65,0.2);"></video>`;
+            } else { // image
+                const img = document.createElement('img');
+                img.src = src;
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '90vh';
+                img.style.borderRadius = '10px';
+                container.appendChild(img);
+            }
+            
+            overlay.classList.add('active');
+        };
+
+        window.closeLightbox = function() {
+            const overlay = document.getElementById('lightbox-overlay');
+            overlay.classList.remove('active');
+            // إيقاف الفيديو عند الإغلاق
+            setTimeout(() => {
+                document.getElementById('lightbox-content').innerHTML = '';
+            }, 400);
+        };
+        
+        // إغلاق عند الضغط على الخلفية أو زر الإغلاق
+        document.querySelector('.close-lightbox').onclick = window.closeLightbox;
+        document.getElementById('lightbox-overlay').onclick = (e) => {
+            if(e.target.id === 'lightbox-overlay') window.closeLightbox();
+        };
 
         // عداد وهمي
         setInterval(() => {

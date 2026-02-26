@@ -76,4 +76,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const animatedElements = document.querySelectorAll('.scroll-animate');
     animatedElements.forEach((el) => observer.observe(el));
+
+    // 6. Service Worker Update Notification
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+            reg.onupdatefound = () => {
+                const installingWorker = reg.installing;
+                installingWorker.onstatechange = () => {
+                    if (installingWorker.state === 'installed') {
+                        if (navigator.serviceWorker.controller) {
+                            // At this point, the old content is still being served and
+                            // the new content is available for the next load.
+                            // We can show a "New content is available; please refresh." toast.
+                            showUpdateToast(reg);
+                        }
+                    }
+                };
+            };
+        }).catch(error => {
+            console.error('Service Worker registration failed:', error);
+        });
+    }
+
+    function showUpdateToast(registration) {
+        const updateToast = document.getElementById('update-toast');
+        const reloadButton = document.getElementById('reload-button');
+        if (updateToast && reloadButton) {
+            updateToast.classList.add('show');
+            reloadButton.onclick = () => {
+                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                window.location.reload();
+            };
+        }
+    }
 });
