@@ -1,0 +1,26 @@
+name: Auto Cache Buster
+
+on:
+  push:
+    branches:
+      - main  # أو master حسب اسم الفرع عندك
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cache Busting for all HTML files
+        run: |
+          # هذا السطر يبحث عن كل ملفات الـ HTML في كل المجلدات
+          # ويقوم بإضافة بصمة (Hash) فريدة لكل روابط الـ CSS و JS
+          find . -name "*.html" -exec sed -i 's/\.css/.css?v=${{ github.sha }}/g' {} +
+          find . -name "*.html" -exec sed -i 's/\.js/.js?v=${{ github.sha }}/g' {} +
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
