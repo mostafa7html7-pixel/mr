@@ -1,4 +1,4 @@
-const CACHE_NAME = 'abqarieno-v3'; // تم تحديث الإصدار لإجبار المتصفح على جلب الملفات الجديدة
+const CACHE_NAME = 'abqarieno-v6'; // Update: Enforced Auth & Auto-read news
 const ASSETS = [
     './',
     './index.html',
@@ -37,29 +37,31 @@ self.addEventListener('activate', (e) => {
     );
 });
 
-// الاستجابة لرسالة التحديث الفوري
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
-});
-
 // Stale-While-Revalidate Strategy
 self.addEventListener('fetch', (e) => {
-    // Ignore Firebase and other external requests
-    if (e.request.url.includes('firebase') || e.request.url.includes('googleapis')) {
+    // Only handle GET requests and ignore external resources we don't want to cache.
+    if (e.request.method !== 'GET' || e.request.url.includes('firebase') || e.request.url.includes('googleapis')) {
         return;
     }
 
     e.respondWith(
-        caches.match(e.request).then((res) => {
-            const fetchPromise = fetch(e.request).then((networkResponse) => {
-                caches.open(CACHE_NAME).then((cache) => {
+        // Open the cache once for efficiency.
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.match(e.request).then((cachedResponse) => {
+                // Start fetching from the network to get the latest version.
+                const networkFetch = fetch(e.request).then((networkResponse) => {
+                    // If the fetch is successful, update the cache.
+                    // We need to clone the response as it can only be read once.
                     cache.put(e.request, networkResponse.clone());
+                    return networkResponse;
+                }).catch(err => {
+                    console.error('Service Worker fetch failed:', err);
+                    // This error will propagate to the browser if no cached response is available.
                 });
-                return networkResponse;
+
+                // Return the cached response immediately if it exists, otherwise, wait for the network.
+                return cachedResponse || networkFetch;
             });
-            return res || fetchPromise;
         })
     );
 });
