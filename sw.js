@@ -1,4 +1,4 @@
-const CACHE_NAME = 'abqarieno-v6'; // Update: Enforced Auth & Auto-read news
+const CACHE_NAME = 'abqarieno-v5'; // Update: Removed update toast logic
 const ASSETS = [
     './',
     './index.html',

@@ -217,8 +217,8 @@
         const auth = getAuth(app);
         onAuthStateChanged(auth, (user) => {
             if (!user) {
-                // حماية الصفحة: توجيه المستخدم لصفحة التسجيل إذا لم يكن مسجلاً
-                window.location.href = 'auth.html';
+                // If you want to protect the main page, uncomment the next line
+                // window.location.href = 'auth.html';
             }
         });
 
@@ -340,15 +340,6 @@
         // --- 4. دوال التحكم في النافذة (Global Scope) ---
         window.openNewsModal = function() {
             document.getElementById('newsOverlay').classList.add('open');
-            // تحديث حالة القراءة تلقائياً عند فتح القائمة لحل مشكلة تكرار التنبيه
-            if (latestMsgTimeInModal > 0) {
-                const current = parseInt(localStorage.getItem('biology_last_seen_news') || '0');
-                if (latestMsgTimeInModal > current) {
-                    localStorage.setItem('biology_last_seen_news', latestMsgTimeInModal);
-                    badgeEl.classList.remove('active');
-                    floatBtn.classList.remove('glowing');
-                }
-            }
         };
 
         window.markAsRead = function() {

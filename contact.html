@@ -192,12 +192,17 @@
     </div>
 
     <div id="gate-overlay">
-        <div style="text-align: center; background: var(--glass-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--accent-glow);">
-            <i class="fa-solid fa-microscope" style="font-size: 3rem; color: var(--master-neon); margin-bottom: 20px;"></i>
-            <h2>سيرفر الدكتور</h2>
-            <p style="color: #666; margin-bottom: 25px;">اختر وضع الدخول للمتابعة</p>
-            <button onclick="enterAs('student')" style="width:100%; padding:12px; margin-bottom:10px; background:#1a2332; color:#fff; border:none; border-radius:8px; cursor:pointer;">دخول الطلاب (للمتابعة)</button>
-            <button onclick="checkMaster()" style="width:100%; padding:12px; background:var(--master-neon); color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">دخول المستر (إدارة)</button>
+        <div style="text-align: center; background: var(--glass-bg); padding: 40px; border-radius: 20px; border: 1px solid var(--accent-glow); width: 90%; max-width: 400px;">
+            <i class="fa-solid fa-user-graduate" style="font-size: 3rem; color: var(--master-neon); margin-bottom: 20px;"></i>
+            <h2>إكمال بيانات الطالب</h2>
+            <p style="color: #666; margin-bottom: 25px;">يرجى إدخال اسمك ورقم هاتفك للمتابعة</p>
+            
+            <input type="text" id="studentName" placeholder="الاسم بالكامل" style="width:100%; padding:12px; margin-bottom:10px; background:#1a2332; color:#fff; border:1px solid #333; border-radius:8px; outline:none; text-align:center;">
+            <input type="tel" id="studentPhone" placeholder="رقم الهاتف" style="width:100%; padding:12px; margin-bottom:15px; background:#1a2332; color:#fff; border:1px solid #333; border-radius:8px; outline:none; text-align:center;">
+            
+            <button onclick="registerStudent()" style="width:100%; padding:12px; background:var(--master-neon); color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">دخول</button>
+            
+            <p style="margin-top:15px; font-size:0.8rem; color:#444; cursor:pointer;" onclick="checkMaster()">دخول المستر (للمسؤولين فقط)</p>
         </div>
     </div>
 
@@ -279,7 +284,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded, onChildRemoved, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getDatabase, ref, push, onChildAdded, onChildRemoved, serverTimestamp, remove, get, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD092yeOowtCLW0fDcIzaEXrnxvrN4X5T8",
@@ -293,22 +299,47 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const auth = getAuth(app);
         const messagesRef = ref(db, 'broadcasts');
+        let currentUserUid = null;
 
-        // --- نظام حفظ الهوية (Persistence System) ---
-        // التعديل: الطالب دائم (localStorage)، المستر مؤقت (sessionStorage)
+        // --- نظام التحقق من الهوية الجديد (Firebase Auth + Master Code) ---
         const sessionRole = sessionStorage.getItem('biology_user_role');
-        const localRole = localStorage.getItem('biology_user_role');
-        
         const isMaster = sessionRole === 'master';
-        const isStudent = localRole === 'student';
-
-        if (isMaster || isStudent) {
-            document.getElementById('gate-overlay').style.display = 'none';
-        }
 
         if (isMaster) {
+            // إذا كان المستر مسجلاً، اعرض لوحة التحكم وأخفِ البوابة
+            document.getElementById('gate-overlay').style.display = 'none';
             document.getElementById('master-panel').style.display = 'block';
+        } else {
+            // إذا لم يكن المستر، تحقق من هوية الطالب عبر Firebase Auth
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // الطالب مسجل دخوله في Firebase
+                    currentUserUid = user.uid;
+                    const userRef = ref(db, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+
+                    if (snapshot.exists() && snapshot.val().phone) {
+                        // الطالب أكمل بياناته (لديه رقم هاتف)، أخفِ البوابة
+                        document.getElementById('gate-overlay').style.display = 'none';
+                    } else {
+                        // الطالب لم يكمل بياناته، أظهر البوابة
+                        const gateOverlay = document.getElementById('gate-overlay');
+                        gateOverlay.style.display = 'flex';
+                        // املأ حقل الاسم تلقائياً إذا كان متاحاً
+                        const nameInput = document.getElementById('studentName');
+                        if (snapshot.exists() && snapshot.val().username) {
+                            nameInput.value = snapshot.val().username;
+                        } else if (user.displayName) {
+                            nameInput.value = user.displayName;
+                        }
+                    }
+                } else {
+                    // المستخدم غير مسجل دخوله، وجهه لصفحة التسجيل الرئيسية
+                    window.location.href = 'auth.html';
+                }
+            });
         }
 
         // التحقق
@@ -319,9 +350,34 @@
             } else alert("خطأ!");
         }
 
-        window.enterAs = function(role) {
-            if(role === 'student') localStorage.setItem('biology_user_role', 'student'); // حفظ دائم للطالب
-            document.getElementById('gate-overlay').style.display = 'none';
+        window.registerStudent = async function() {
+            const name = document.getElementById('studentName').value;
+            const phone = document.getElementById('studentPhone').value;
+
+            if (!name || name.length < 5) {
+                alert("يرجى إدخال الاسم بالكامل.");
+                return;
+            }
+            // Regex for Egyptian phone numbers
+            if (!phone || !/^(01[0125])[0-9]{8}$/.test(phone)) {
+                alert("يرجى إدخال رقم هاتف مصري صحيح (11 رقم).");
+                return;
+            }
+
+            if (!currentUserUid) {
+                alert("حدث خطأ في التحقق من الهوية. يرجى إعادة تحميل الصفحة.");
+                return;
+            }
+
+            try {
+                const userRef = ref(db, 'users/' + currentUserUid);
+                await update(userRef, { username: name, phone: phone });
+                document.getElementById('gate-overlay').style.display = 'none';
+                alert("تم تسجيل بياناتك بنجاح. أهلاً بك!");
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                alert("حدث خطأ أثناء حفظ البيانات: " + error.message);
+            }
         }
 
         window.switchRole = function() {
